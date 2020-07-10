@@ -107,7 +107,7 @@ def start():
 
 
     global entry_customer
-    entry_customer = Entry(frame)
+    entry_customer = ttk.Entry(frame)
     entry_customer.grid(column=1, row=6, columnspan=4, ipadx=250)
 
     leb7 = Label(frame, text='Sample Number:')
@@ -125,32 +125,32 @@ def start():
     entry_sampleDrawn.grid(column=4, row=7)
 
     leb9 = Label(frame, text='Sample Drawn Date:')
-    leb9.grid(column=0, row=8, sticky=E, padx=20)
+    leb9.grid(column=0, row=8, sticky=E, padx=5)
 
     global entry_sampleDrawnDate
-    entry_sampleDrawnDate = ttk.Button(frame, text='--Select a date--', command=datePicker, width = 18)
-    entry_sampleDrawnDate.grid(column=1, row=8)
+    entry_sampleDrawnDate = ttk.Button(frame, text='--Select a date--', command= lambda:datePicker('drawnDate'), width = 18)
+    entry_sampleDrawnDate.grid(column=1, row=8, pady=5)
 
     leb10 = Label(frame, text='Sample Reached Lab on:')
     leb10.grid(column=3, row=8, sticky=E)
 
     global entry_sampleReached
-    entry_sampleReached = Entry(frame)
-    entry_sampleReached.grid(column=4, row=8)
+    entry_sampleReached = ttk.Button(frame, text='--Select a date--', command= lambda:datePicker('reachedDate'), width = 18)
+    entry_sampleReached.grid(column=4, row=8, pady=5)
 
     leb11 = Label(frame, text='Test Start Date:')
     leb11.grid(column=0, row=9, sticky=E, padx=20)
 
     global entry_testStart
-    entry_testStart = Entry(frame)
-    entry_testStart.grid(column=1, row=9)
+    entry_testStart = ttk.Button(frame, text='--Select a date--', command= lambda:datePicker('testStart'), width = 18)
+    entry_testStart.grid(column=1, row=9, pady=5)
 
     leb12 = Label(frame, text='Test End Date:')
     leb12.grid(column=3, row=9, sticky=E)
 
     global entry_testEnd
-    entry_testEnd = Entry(frame)
-    entry_testEnd.grid(column=4, row=9)
+    entry_testEnd = ttk.Button(frame, text='--Select a date--', command= lambda:datePicker('testEnd'), width = 18 )
+    entry_testEnd.grid(column=4, row=9, pady=5)
 
     leb13 = Label(frame, text='Sample Reference:')
     leb13.grid(column=0, row=10, padx=20, sticky=E)
@@ -164,18 +164,18 @@ def start():
         entry_sampleNumber.delete(0, END)
         entry_sampleDrawn.delete(0, END)
         #entry_sampleDrawnDate.delete(0, END)
-        entry_sampleReached.delete(0, END)
-        entry_testStart.delete(0, END)
-        entry_testEnd.delete(0, END)
+        #entry_sampleReached.delete(0, END)
+        #entry_testStart.delete(0, END)
+        #entry_testEnd.delete(0, END)
         entry_sampleReference.delete(0, END)
 
         entry_customer.insert(0, customer_name)
         entry_sampleNumber.insert(0, sample_no)
         entry_sampleDrawn.insert(0, sample_drawn_by)
         #entry_sampleDrawnDate.insert(0, drawn_date)
-        entry_sampleReached.insert(0, reached_date)
-        entry_testStart.insert(0, start_date)
-        entry_testEnd.insert(0, end_date)
+        #entry_sampleReached.insert(0, reached_date)
+        #entry_testStart.insert(0, start_date)
+        #entry_testEnd.insert(0, end_date)
         entry_sampleReference.insert(0, sample_ref)
 
     global next_button
@@ -213,7 +213,7 @@ def physical():
         cur.execute(
             '''INSERT INTO main_data(customer, sample_number, sample_drawn_by, sample_drawn_date, sample_reached_lab, test_start_date, test_end_date, sample_reference) VALUES(?, ?, ?, ?, ?, ?, ?, ?)''',
             (entry_customer.get(), entry_sampleNumber.get(), entry_sampleDrawn.get(), entry_sampleDrawnDate['text'],
-             entry_sampleReached.get(), entry_testStart.get(), entry_testEnd.get(), entry_sampleReference.get()))
+             entry_sampleReached['text'], entry_testStart['text'], entry_testEnd['text'], entry_sampleReference.get()))
     except:
         cur.execute('''SELECT id from main_data WHERE sample_number = ?''', (entry_sampleNumber.get(),))
         id_no = (cur.fetchone()[0])
@@ -1257,22 +1257,29 @@ def bill():
     generator_button = ttk.Button(billing_frame, text="Generate Bill", command=generate)
     generator_button.grid(row=6, column=3)
 
-def datePicker():
+def datePicker(button_name):
     def printDate():
         selectedDate = cal.selection_get()
-        entry_sampleDrawnDate.configure(text = selectedDate)
+        if button_name == 'drawnDate':
+            entry_sampleDrawnDate.configure(text = selectedDate)
+        elif button_name == 'reachedDate':
+            entry_sampleReached.configure(text = selectedDate)
+        elif button_name == 'testStart':
+            entry_testStart.configure(text = selectedDate)
+        elif button_name == 'testEnd':
+            entry_testEnd.configure(text = selectedDate)
         dateWindow.destroy()
 
-
-
-
     dateWindow = Toplevel(window)
-    cal = Calendar(dateWindow, font = "Arial 14", selectmode ='day', cursor = 'hand1', year = 2020, month = 7, day=10)
+    year, month, day = date.year, date.month, date.day
+    cal = Calendar(dateWindow, font = "Arial 14", selectmode ='day', year=year, month = month, day=day)
     cal.pack(fill="both", expand=True)
     ttk.Button(dateWindow, text = "Select", command = printDate).pack()
 
 
 
+s = ttk.Style(window)
+s.theme_use('clam')
 
 start()
 window.mainloop()
