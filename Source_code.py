@@ -4,9 +4,9 @@ from tkinter import messagebox
 from PIL import ImageTk, Image
 import sqlite3
 import datetime
-import PIL.Image
 from docx import *
 import os
+from tkcalendar import Calendar, DateEntry
 
 mk = os.access("word/bill", mode=0o777)
 
@@ -14,7 +14,8 @@ if mk is False:
     os.makedirs("word/bill")
 
 date = datetime.date.today()
-formatted_date = date.strftime( )
+formatted_date = date.strftime('%d %B %Y')
+
 
 window = Tk()
 window.title('Water Quality Testing Laboratory')
@@ -127,7 +128,7 @@ def start():
     leb9.grid(column=0, row=8, sticky=E, padx=20)
 
     global entry_sampleDrawnDate
-    entry_sampleDrawnDate = Entry(frame)
+    entry_sampleDrawnDate = ttk.Button(frame, text='--Select a date--', command=datePicker, width = 18)
     entry_sampleDrawnDate.grid(column=1, row=8)
 
     leb10 = Label(frame, text='Sample Reached Lab on:')
@@ -162,7 +163,7 @@ def start():
         entry_customer.delete(0, END)
         entry_sampleNumber.delete(0, END)
         entry_sampleDrawn.delete(0, END)
-        entry_sampleDrawnDate.delete(0, END)
+        #entry_sampleDrawnDate.delete(0, END)
         entry_sampleReached.delete(0, END)
         entry_testStart.delete(0, END)
         entry_testEnd.delete(0, END)
@@ -171,7 +172,7 @@ def start():
         entry_customer.insert(0, customer_name)
         entry_sampleNumber.insert(0, sample_no)
         entry_sampleDrawn.insert(0, sample_drawn_by)
-        entry_sampleDrawnDate.insert(0, drawn_date)
+        #entry_sampleDrawnDate.insert(0, drawn_date)
         entry_sampleReached.insert(0, reached_date)
         entry_testStart.insert(0, start_date)
         entry_testEnd.insert(0, end_date)
@@ -211,7 +212,7 @@ def physical():
     try:
         cur.execute(
             '''INSERT INTO main_data(customer, sample_number, sample_drawn_by, sample_drawn_date, sample_reached_lab, test_start_date, test_end_date, sample_reference) VALUES(?, ?, ?, ?, ?, ?, ?, ?)''',
-            (entry_customer.get(), entry_sampleNumber.get(), entry_sampleDrawn.get(), entry_sampleDrawnDate.get(),
+            (entry_customer.get(), entry_sampleNumber.get(), entry_sampleDrawn.get(), entry_sampleDrawnDate['text'],
              entry_sampleReached.get(), entry_testStart.get(), entry_testEnd.get(), entry_sampleReference.get()))
     except:
         cur.execute('''SELECT id from main_data WHERE sample_number = ?''', (entry_sampleNumber.get(),))
@@ -322,8 +323,9 @@ def physical():
     leb31.grid(column=3, row=15, sticky=W)
 
     global entry_odour
-    entry_odour = Entry(frame2)
+    entry_odour = ttk.Combobox(frame2, values=['Unobjectionable', 'Objectionable'])
     entry_odour.grid(column=4, row=15)
+    entry_odour.current(0)
 
     # Turbidity NTU
     leb32 = Label(frame2, text='4')
@@ -479,6 +481,7 @@ def chemical():
     else:
         cur.execute('''SELECT * FROM main_data WHERE id = ?''', ((max_id - 1),))
         all = cur.fetchall()
+        print(all)
         ph = all[0][20]
         ph_alkalinity = all[0][21]
         total_alkalinity = all[0][22]
@@ -1125,6 +1128,10 @@ def saveWord():
     doc.tables[4].cell(0, 0).text = str(all[41])
 
     filename = str(all[1]).strip() + '_sample_no_' + str(all[2]).strip() + '.docx'
+
+    for paragraph in doc.paragraphs:
+        if 'Date' in paragraph.text:
+            paragraph.text= "Date: "+ formatted_date
     doc.save("word/%s" % filename)
 
 
@@ -1150,7 +1157,12 @@ def generate():
     else:
         total_amount = total_samples * int(price_per_sample.get())
 
-    grand_total = int(total_amount) - (int(deduction.get()) * int(total_samples)) + int(TA_sample_collection.get())
+    if deduction.get()=='' or None:
+        deductionRs = 0
+    else:
+        deductionRs = int(deduction.get())
+
+    grand_total = int(total_amount) - deductionRs * int(total_samples) + int(TA_sample_collection.get())
     try:
         doc = Document('water lab bill.docx')
         doc.tables[0].cell(0, 1).text = customer_name
@@ -1159,13 +1171,13 @@ def generate():
         doc.tables[0].cell(3, 1).text = str(datetime.date.today())
         doc.tables[0].cell(5, 1).text = billing_rate_category.get()
         doc.tables[0].cell(6, 1).text = price_per_sample.get()
-        doc.tables[0].cell(7, 1).text = deduction.get()
+        doc.tables[0].cell(7, 1).text = deductionRs
         doc.tables[0].cell(8, 1).text = str(total_samples)
         doc.tables[0].cell(9, 1).text = "Rs.%d" % int(total_amount)
         doc.tables[0].cell(10, 1).text = TA_sample_collection.get()
         doc.tables[0].cell(11, 1).text = "Rs.%d" % grand_total
         doc.save(f"word/bill/{from_sample} to {to_sample} bill.docx")
-        messagebox.showinfo("Success", "Bill hasb een generated successfully")
+        messagebox.showinfo("Success", "Bill has been generated successfully")
     except:
         messagebox.showerror("Error", "Data has been not saved properly Please enter again or Contact administrator")
 
@@ -1244,6 +1256,22 @@ def bill():
 
     generator_button = ttk.Button(billing_frame, text="Generate Bill", command=generate)
     generator_button.grid(row=6, column=3)
+
+def datePicker():
+    def printDate():
+        selectedDate = cal.selection_get()
+        entry_sampleDrawnDate.configure(text = selectedDate)
+        dateWindow.destroy()
+
+
+
+
+    dateWindow = Toplevel(window)
+    cal = Calendar(dateWindow, font = "Arial 14", selectmode ='day', cursor = 'hand1', year = 2020, month = 7, day=10)
+    cal.pack(fill="both", expand=True)
+    ttk.Button(dateWindow, text = "Select", command = printDate).pack()
+
+
 
 
 start()

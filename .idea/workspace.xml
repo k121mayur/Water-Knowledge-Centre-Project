@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:master" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="65cf0e51-bae0-48b7-9f53-707555f9371b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/Source_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/Source_code.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WKC.db" beforeDir="false" afterPath="$PROJECT_DIR$/WKC.db" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1eP7Y3CDDJVv0JWjOtUGrsajTNF" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="Source_code" type="PythonConfigurationType" factoryName="Python">
+      <module name="Water-Knowledge-Centre-Project" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="$USER_HOME$/opt/anaconda3/bin/python3" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Source_code.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="true" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="65cf0e51-bae0-48b7-9f53-707555f9371b" name="Default Changelist" comment="" />
+      <created>1594211417091</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1594211417091</updated>
+      <workItem from="1594211420788" duration="39000" />
+      <workItem from="1594266765327" duration="1594000" />
+      <workItem from="1594283598679" duration="3357000" />
+      <workItem from="1594293362979" duration="120000" />
+      <workItem from="1594293486315" duration="2223000" />
+      <workItem from="1594310192005" duration="1241000" />
+      <workItem from="1594347730508" duration="816000" />
+      <workItem from="1594372490097" duration="724000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="129" y="144" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1594267169061">
+      <screen x="0" y="23" width="1440" height="806" />
+    </state>
+    <state x="129" y="144" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.806@0.23.1440.806" timestamp="1594267169061" />
+    <state x="509" y="23" key="CommitChangelistDialog2" timestamp="1594293480696">
+      <screen x="0" y="23" width="1440" height="806" />
+    </state>
+    <state x="509" y="23" key="CommitChangelistDialog2/0.23.1440.806@0.23.1440.806" timestamp="1594293480696" />
+    <state x="288" y="93" key="DiffContextDialog" timestamp="1594293476919">
+      <screen x="0" y="23" width="1440" height="806" />
+    </state>
+    <state x="288" y="93" key="DiffContextDialog/0.23.1440.806@0.23.1440.806" timestamp="1594293476919" />
+    <state width="884" height="199" key="GridCell.Tab.0.bottom" timestamp="1594373699837">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state width="884" height="199" key="GridCell.Tab.0.bottom/0.23.1440.806@0.23.1440.806" timestamp="1594372911501" />
+    <state width="884" height="199" key="GridCell.Tab.0.bottom/0.23.1440.808@0.23.1440.808" timestamp="1594295387607" />
+    <state width="884" height="199" key="GridCell.Tab.0.bottom/0.23.1440.811@0.23.1440.811" timestamp="1594373699837" />
+    <state width="884" height="199" key="GridCell.Tab.0.bottom/0.23.1440.814@0.23.1440.814" timestamp="1594310987520" />
+    <state width="884" height="199" key="GridCell.Tab.0.center" timestamp="1594373699836">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state width="884" height="199" key="GridCell.Tab.0.center/0.23.1440.806@0.23.1440.806" timestamp="1594372911500" />
+    <state width="884" height="199" key="GridCell.Tab.0.center/0.23.1440.808@0.23.1440.808" timestamp="1594295387606" />
+    <state width="884" height="199" key="GridCell.Tab.0.center/0.23.1440.811@0.23.1440.811" timestamp="1594373699836" />
+    <state width="884" height="199" key="GridCell.Tab.0.center/0.23.1440.814@0.23.1440.814" timestamp="1594310987519" />
+    <state width="884" height="199" key="GridCell.Tab.0.left" timestamp="1594373699834">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state width="884" height="199" key="GridCell.Tab.0.left/0.23.1440.806@0.23.1440.806" timestamp="1594372911499" />
+    <state width="884" height="199" key="GridCell.Tab.0.left/0.23.1440.808@0.23.1440.808" timestamp="1594295387602" />
+    <state width="884" height="199" key="GridCell.Tab.0.left/0.23.1440.811@0.23.1440.811" timestamp="1594373699834" />
+    <state width="884" height="199" key="GridCell.Tab.0.left/0.23.1440.814@0.23.1440.814" timestamp="1594310987518" />
+    <state width="884" height="199" key="GridCell.Tab.0.right" timestamp="1594373699836">
+      <screen x="0" y="23" width="1440" height="811" />
+    </state>
+    <state width="884" height="199" key="GridCell.Tab.0.right/0.23.1440.806@0.23.1440.806" timestamp="1594372911500" />
+    <state width="884" height="199" key="GridCell.Tab.0.right/0.23.1440.808@0.23.1440.808" timestamp="1594295387607" />
+    <state width="884" height="199" key="GridCell.Tab.0.right/0.23.1440.811@0.23.1440.811" timestamp="1594373699836" />
+    <state width="884" height="199" key="GridCell.Tab.0.right/0.23.1440.814@0.23.1440.814" timestamp="1594310987520" />
+    <state x="0" y="65" key="SettingsEditor" timestamp="1594266895854">
+      <screen x="0" y="23" width="1440" height="806" />
+    </state>
+    <state x="0" y="65" key="SettingsEditor/0.23.1440.806@0.23.1440.806" timestamp="1594266895854" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Water_Knowledge_Centre_Project$Source_code.coverage" NAME="Source_code Coverage Results" MODIFIED="1594373913502" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Water_Knowledge_Centre_Project$Unnamed.coverage" NAME="Source_code Coverage Results" MODIFIED="1594267893608" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
