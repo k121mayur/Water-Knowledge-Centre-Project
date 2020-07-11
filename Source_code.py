@@ -16,7 +16,6 @@ if mk is False:
 date = datetime.date.today()
 formatted_date = date.strftime('%d %B %Y')
 
-
 window = Tk()
 window.title('Water Quality Testing Laboratory')
 window.iconbitmap('')
@@ -25,7 +24,8 @@ window.iconbitmap('')
 connection = sqlite3.connect('WKC.db')
 cur = connection.cursor()
 
-cur.execute('''CREATE TABLE IF NOT EXISTS main_data ("Id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "customer" TEXT NOT NULL, "sample_number" INTEGER NOT NULL UNIQUE, "sample_drawn_by" TEXT, "sample_drawn_date" TEXT, "sample_reached_lab" TEXT, "test_start_date" TEXT, "test_end_date" TEXT, "sample_reference" TEXT, "village" TEXT, "source_type" TEXT, "location_of_source" TEXT, "appearance" TEXT, "colour" TEXT, "odour" TEXT, "turbidity" INTEGER, "electrical_conductivity" INTEGER, "total_dissolved_solids" INTEGER, "total_solids" INTEGER, "total_suspended_solids" INTEGER, "ph" INTEGER, "ph_alkalinity" INTEGER, "total_alkalinity" INTEGER, "total_hardness" INTEGER, "ca" INTEGER, "mg" INTEGER, "fe" INTEGER, "na" INTEGER, "k" INTEGER, "nh3" INTEGER, "no2" INTEGER, "no3"	INTEGER, "cl" INTEGER, "f" INTEGER, "so4" INTEGER, "po4" INTEGER, "tids_test" INTEGER, "do"	INTEGER, "bod" INTEGER, "chemical_oxygen_demand" INTEGER, "fecal_coliform" INTEGER, "comments" TEXT, "date" TEXT)''')
+cur.execute(
+    '''CREATE TABLE IF NOT EXISTS main_data ("Id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "customer" TEXT NOT NULL, "sample_number" INTEGER NOT NULL UNIQUE, "sample_drawn_by" TEXT, "sample_drawn_date" TEXT, "sample_reached_lab" TEXT, "test_start_date" TEXT, "test_end_date" TEXT, "sample_reference" TEXT, "village" TEXT, "source_type" TEXT, "location_of_source" TEXT, "appearance" TEXT, "colour" TEXT, "odour" TEXT, "turbidity" INTEGER, "electrical_conductivity" INTEGER, "total_dissolved_solids" INTEGER, "total_solids" INTEGER, "total_suspended_solids" INTEGER, "ph" INTEGER, "ph_alkalinity" INTEGER, "total_alkalinity" INTEGER, "total_hardness" INTEGER, "ca" INTEGER, "mg" INTEGER, "fe" INTEGER, "na" INTEGER, "k" INTEGER, "nh3" INTEGER, "no2" INTEGER, "no3"	INTEGER, "cl" INTEGER, "f" INTEGER, "so4" INTEGER, "po4" INTEGER, "tids_test" INTEGER, "do"	INTEGER, "bod" INTEGER, "chemical_oxygen_demand" INTEGER, "fecal_coliform" INTEGER, "comments" TEXT, "date" TEXT)''')
 
 
 # First / Start screen
@@ -92,19 +92,17 @@ def start():
 
     data = Image.open('tda_logo_150px.jpg')
     render = ImageTk.PhotoImage(data)
-    leb5 = Label(image=render,  text = 'mayur', bg='grey', fg='red')
+    leb5 = Label(image=render, text='mayur', bg='grey', fg='red')
     leb5.image = render
-    leb5.grid(row = 0, column = 4, rowspan =4, columnspan = 2)
+    leb5.grid(row=0, column=4, rowspan=4, columnspan=2)
 
     # Sample details
     global frame
     frame = LabelFrame(window, padx=20, pady=20)
-    frame.grid(row = 5, padx=20, pady=20, columnspan=5)
+    frame.grid(row=5, padx=20, pady=20, columnspan=5)
 
     leb6 = Label(frame, text='Customer Details:')
     leb6.grid(column=0, row=6, sticky=E, padx=20)
-
-
 
     global entry_customer
     entry_customer = ttk.Entry(frame)
@@ -128,28 +126,30 @@ def start():
     leb9.grid(column=0, row=8, sticky=E, padx=5)
 
     global entry_sampleDrawnDate
-    entry_sampleDrawnDate = ttk.Button(frame, text='--Select a date--', command= lambda:datePicker('drawnDate'), width = 18)
+    entry_sampleDrawnDate = ttk.Button(frame, text='--Select a date--', command=lambda: datePicker('drawnDate'),
+                                       width=18)
     entry_sampleDrawnDate.grid(column=1, row=8, pady=5)
 
     leb10 = Label(frame, text='Sample Reached Lab on:')
     leb10.grid(column=3, row=8, sticky=E)
 
     global entry_sampleReached
-    entry_sampleReached = ttk.Button(frame, text='--Select a date--', command= lambda:datePicker('reachedDate'), width = 18)
+    entry_sampleReached = ttk.Button(frame, text='--Select a date--', command=lambda: datePicker('reachedDate'),
+                                     width=18)
     entry_sampleReached.grid(column=4, row=8, pady=5)
 
     leb11 = Label(frame, text='Test Start Date:')
     leb11.grid(column=0, row=9, sticky=E, padx=20)
 
     global entry_testStart
-    entry_testStart = ttk.Button(frame, text='--Select a date--', command= lambda:datePicker('testStart'), width = 18)
+    entry_testStart = ttk.Button(frame, text='--Select a date--', command=lambda: datePicker('testStart'), width=18)
     entry_testStart.grid(column=1, row=9, pady=5)
 
     leb12 = Label(frame, text='Test End Date:')
     leb12.grid(column=3, row=9, sticky=E)
 
     global entry_testEnd
-    entry_testEnd = ttk.Button(frame, text='--Select a date--', command= lambda:datePicker('testEnd'), width = 18 )
+    entry_testEnd = ttk.Button(frame, text='--Select a date--', command=lambda: datePicker('testEnd'), width=18)
     entry_testEnd.grid(column=4, row=9, pady=5)
 
     leb13 = Label(frame, text='Sample Reference:')
@@ -163,19 +163,15 @@ def start():
         entry_customer.delete(0, END)
         entry_sampleNumber.delete(0, END)
         entry_sampleDrawn.delete(0, END)
-        #entry_sampleDrawnDate.delete(0, END)
-        #entry_sampleReached.delete(0, END)
-        #entry_testStart.delete(0, END)
-        #entry_testEnd.delete(0, END)
         entry_sampleReference.delete(0, END)
 
         entry_customer.insert(0, customer_name)
         entry_sampleNumber.insert(0, sample_no)
         entry_sampleDrawn.insert(0, sample_drawn_by)
-        #entry_sampleDrawnDate.insert(0, drawn_date)
-        #entry_sampleReached.insert(0, reached_date)
-        #entry_testStart.insert(0, start_date)
-        #entry_testEnd.insert(0, end_date)
+        entry_sampleDrawnDate.configure(text = drawn_date)
+        entry_sampleReached.configure(text =  reached_date)
+        entry_testStart.configure(text = start_date)
+        entry_testEnd.configure(text = end_date)
         entry_sampleReference.insert(0, sample_ref)
 
     global next_button
@@ -217,7 +213,6 @@ def physical():
     except:
         cur.execute('''SELECT id from main_data WHERE sample_number = ?''', (entry_sampleNumber.get(),))
         id_no = (cur.fetchone()[0])
-        print(id_no)
         cur.execute(
             '''UPDATE main_data SET customer=?, sample_number=?, sample_drawn_by=?, sample_drawn_date=?, sample_reached_lab=?, test_start_date=?, test_end_date=?, sample_reference=? WHERE id = ?''',
             (entry_customer.get(), entry_sampleNumber.get(), entry_sampleDrawn.get(), entry_sampleDrawnDate.get(),
@@ -476,12 +471,11 @@ def chemical():
 
     cur.execute('''SELECT max(id) FROM main_data''')
     max_id = cur.fetchall()[0][0]
-    if max_id - 1 < 1 :
+    if max_id - 1 < 1:
         pass
     else:
         cur.execute('''SELECT * FROM main_data WHERE id = ?''', ((max_id - 1),))
         all = cur.fetchall()
-        print(all)
         ph = all[0][20]
         ph_alkalinity = all[0][21]
         total_alkalinity = all[0][22]
@@ -782,7 +776,7 @@ def half_chemical():
     max_id = cur.fetchall()[0][0]
     cur.execute('''SELECT * FROM main_data WHERE id = ?''', ((max_id - 1),))
 
-    if max_id - 1 < 1 :
+    if max_id - 1 < 1:
         pass
     else:
         all = cur.fetchall()
@@ -1039,7 +1033,6 @@ def confirm():
     cur.execute('''SELECT max(id) FROM main_data''')
     max_id = cur.fetchall()[0][0]
     cur.execute('''SELECT * FROM main_data WHERE id = ?''', (max_id,))
-    print(cur.fetchall())
     global top
     top = Toplevel(window, )
 
@@ -1061,7 +1054,6 @@ def confirm():
 
     cur.execute('''SELECT * FROM main_data WHERE id = ?''', (max_id,))
     verification_data = cur.fetchall()[0]
-    print(len(verification_data))
 
     x, y, l, count = 0, 0, 0, 1
     for i in verification_data:
@@ -1100,7 +1092,6 @@ def top_exit():
 def saveWord():
     cur.execute('''SELECT * FROM main_data WHERE id=?''', (id,))
     all = cur.fetchall()[0]
-    print(all)
     doc = Document('sample.docx')
     doc.tables[0].cell(0, 1).text = all[1]
     doc.tables[0].cell(1, 1).text = str(all[2])
@@ -1114,7 +1105,6 @@ def saveWord():
     x, y = 1, 12
     for cell in range(8):
         doc.tables[1].cell(x, 4).text = str(all[y])
-        print(x)
         x += 1
         y += 1
 
@@ -1131,7 +1121,7 @@ def saveWord():
 
     for paragraph in doc.paragraphs:
         if 'Date' in paragraph.text:
-            paragraph.text= "Date: "+ formatted_date
+            paragraph.text = "Date: " + formatted_date
     doc.save("word/%s" % filename)
 
 
@@ -1145,8 +1135,6 @@ def generate():
                 (from_sample, to_sample,))
     all = cur.fetchall()
     total_samples = all[0][0]
-    print(total_samples)
-    print(date_str)
     cur.execute('''SELECT customer, sample_drawn_by FROM main_data WHERE sample_number = ?  ''', (to_sample,))
     raw_data = cur.fetchall()
     customer_name = raw_data[0][0]
@@ -1157,7 +1145,7 @@ def generate():
     else:
         total_amount = total_samples * int(price_per_sample.get())
 
-    if deduction.get()=='' or None:
+    if deduction.get() == '' or None:
         deductionRs = 0
     else:
         deductionRs = int(deduction.get())
@@ -1171,7 +1159,7 @@ def generate():
         doc.tables[0].cell(3, 1).text = str(datetime.date.today())
         doc.tables[0].cell(5, 1).text = billing_rate_category.get()
         doc.tables[0].cell(6, 1).text = price_per_sample.get()
-        doc.tables[0].cell(7, 1).text = deductionRs
+        doc.tables[0].cell(7, 1).text = str(deductionRs)
         doc.tables[0].cell(8, 1).text = str(total_samples)
         doc.tables[0].cell(9, 1).text = "Rs.%d" % int(total_amount)
         doc.tables[0].cell(10, 1).text = TA_sample_collection.get()
@@ -1257,25 +1245,25 @@ def bill():
     generator_button = ttk.Button(billing_frame, text="Generate Bill", command=generate)
     generator_button.grid(row=6, column=3)
 
+
 def datePicker(button_name):
     def printDate():
         selectedDate = cal.selection_get()
         if button_name == 'drawnDate':
-            entry_sampleDrawnDate.configure(text = selectedDate)
+            entry_sampleDrawnDate.configure(text=selectedDate)
         elif button_name == 'reachedDate':
-            entry_sampleReached.configure(text = selectedDate)
+            entry_sampleReached.configure(text=selectedDate)
         elif button_name == 'testStart':
-            entry_testStart.configure(text = selectedDate)
+            entry_testStart.configure(text=selectedDate)
         elif button_name == 'testEnd':
-            entry_testEnd.configure(text = selectedDate)
+            entry_testEnd.configure(text=selectedDate)
         dateWindow.destroy()
 
     dateWindow = Toplevel(window)
     year, month, day = date.year, date.month, date.day
-    cal = Calendar(dateWindow, font = "Arial 14", selectmode ='day', year=year, month = month, day=day)
+    cal = Calendar(dateWindow, font="Arial 14", selectmode='day', year=year, month=month, day=day)
     cal.pack(fill="both", expand=True)
-    ttk.Button(dateWindow, text = "Select", command = printDate).pack()
-
+    ttk.Button(dateWindow, text="Select", command=printDate).pack(pady = 5)
 
 
 s = ttk.Style(window)
