@@ -6,7 +6,7 @@ import sqlite3
 import datetime
 from docx import *
 import os
-from tkcalendar import Calendar, DateEntry
+from tkcalendar import Calendar
 
 mk = os.access("word/bill", mode=0o777)
 
@@ -39,7 +39,7 @@ def start():
 
     # Checking last entry is Available or not.
     try:
-        cur.execute('''SELECT max(id) FROM main_data''')
+        cur.execute('SELECT max(id) FROM main_data')
         max_id = cur.fetchall()[0][0]
     except:
         max_id = None
@@ -56,7 +56,10 @@ def start():
         reached_date = all[0][5]
         start_date = all[0][6]
         end_date = all[0][7]
-        sample_ref = str(all[0][9]).strip() + ", " + str(all[0][10]).strip() + ", " + str(all[0][11]).strip()
+        sample_ref = all[0][8]
+        village = all[0][9]
+        source = all[0][10]
+        location = all[0][11]
 
     # Exit a confirmation window if Open else pass
     try:
@@ -152,27 +155,53 @@ def start():
     entry_testEnd = ttk.Button(frame, text='--Select a date--', command=lambda: datePicker('testEnd'), width=18)
     entry_testEnd.grid(column=4, row=9, pady=5)
 
-    leb13 = Label(frame, text='Sample Reference:')
-    leb13.grid(column=0, row=10, padx=20, sticky=E)
+    leb13 = Label(frame, text='Village Name:')
+    leb13.grid(column=3, row=10, padx=20, sticky=E)
+
+    global entry_village
+    entry_village = Entry(frame)
+    entry_village.grid(column=4, row=10)
+
+    leb16 = Label(frame, text='Sample Reference:')
+    leb16.grid(column=0, row=10, padx=20, sticky=E)
 
     global entry_sampleReference
     entry_sampleReference = Entry(frame)
-    entry_sampleReference.grid(column=1, row=10, columnspan=4, ipadx=250)
+    entry_sampleReference.grid(column=1, row=10)
+
+    leb14 = Label(frame, text="Source Type:")
+    leb14.grid(column=0, row=11, sticky=E)
+
+    global entry_sourceType
+    entry_sourceType = Entry(frame)
+    entry_sourceType.grid(column=1, row=11)
+
+    leb15 = Label(frame, text="Location of Source:")
+    leb15.grid(column=3, row=11, sticky=E)
+
+    global entry_location
+    entry_location = Entry(frame, text="Village Name:")
+    entry_location.grid(column=4, row=11)
 
     if max_id != None:
         entry_customer.delete(0, END)
         entry_sampleNumber.delete(0, END)
         entry_sampleDrawn.delete(0, END)
-        entry_sampleReference.delete(0, END)
+        entry_village.delete(0, END)
+        entry_sourceType.delete(0, END)
+        entry_location.delete(0, END)
 
         entry_customer.insert(0, customer_name)
         entry_sampleNumber.insert(0, sample_no)
         entry_sampleDrawn.insert(0, sample_drawn_by)
-        entry_sampleDrawnDate.configure(text = drawn_date)
-        entry_sampleReached.configure(text =  reached_date)
-        entry_testStart.configure(text = start_date)
-        entry_testEnd.configure(text = end_date)
+        entry_sampleDrawnDate.configure(text=drawn_date)
+        entry_sampleReached.configure(text=reached_date)
+        entry_testStart.configure(text=start_date)
+        entry_testEnd.configure(text=end_date)
         entry_sampleReference.insert(0, sample_ref)
+        entry_village.insert(0, village)
+        entry_sourceType.insert(0, source)
+        entry_location.insert(0, location)
 
     global next_button
     next_button = ttk.Button(window, text="Next", command=physical)
@@ -205,18 +234,22 @@ def physical():
     except:
         max_id = None
 
+    global sampleReference
+    sampleReference = entry_sampleReference.get() + ' ' + entry_village.get().strip() + ' ' + entry_location.get().strip() + ' ' + entry_sourceType.get()
+
     try:
         cur.execute(
-            '''INSERT INTO main_data(customer, sample_number, sample_drawn_by, sample_drawn_date, sample_reached_lab, test_start_date, test_end_date, sample_reference) VALUES(?, ?, ?, ?, ?, ?, ?, ?)''',
+            '''INSERT INTO main_data(customer, sample_number, sample_drawn_by, sample_drawn_date, sample_reached_lab, test_start_date, test_end_date, sample_reference, village, source_type, location_of_source ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
             (entry_customer.get(), entry_sampleNumber.get(), entry_sampleDrawn.get(), entry_sampleDrawnDate['text'],
-             entry_sampleReached['text'], entry_testStart['text'], entry_testEnd['text'], entry_sampleReference.get()))
+             entry_sampleReached['text'], entry_testStart['text'], entry_testEnd['text'], entry_sampleReference.get(),
+             entry_village.get(), entry_sourceType.get(), entry_location.get()))
     except:
         cur.execute('''SELECT id from main_data WHERE sample_number = ?''', (entry_sampleNumber.get(),))
         id_no = (cur.fetchone()[0])
         cur.execute(
             '''UPDATE main_data SET customer=?, sample_number=?, sample_drawn_by=?, sample_drawn_date=?, sample_reached_lab=?, test_start_date=?, test_end_date=?, sample_reference=? WHERE id = ?''',
-            (entry_customer.get(), entry_sampleNumber.get(), entry_sampleDrawn.get(), entry_sampleDrawnDate.get(),
-             entry_sampleReached.get(), entry_testStart.get(), entry_testEnd.get(), entry_sampleReference.get(), id_no))
+            (entry_customer.get(), entry_sampleNumber.get(), entry_sampleDrawn.get(), entry_sampleDrawnDate['text'],
+             entry_sampleReached['text'], entry_testStart['text'], entry_testEnd['text'], entry_sampleReference.get(), id_no))
 
     connection.commit()
 
@@ -227,7 +260,6 @@ def physical():
         all = cur.fetchall()
         appearance = all[0][12]
         colour = all[0][13]
-        odour = all[0][14]
         turbidity = all[0][15]
         electrical_conductivity = all[0][16]
         TDS = all[0][17]
@@ -237,11 +269,6 @@ def physical():
     cur.execute('''SELECT id from main_data WHERE sample_number = ?''', (entry_sampleNumber.get(),))
     global id
     id = (cur.fetchone()[0])
-    sample_reference = entry_sampleReference.get()
-    data = sample_reference.split(',')
-    cur.execute('''UPDATE main_data SET village = ?, source_type = ?, location_of_source = ?  WHERE id = ?''',
-                (data[0], data[1], data[2], id))
-
     cur.execute('''SELECT * FROM main_data''')
 
     frame.grid_forget()
@@ -286,6 +313,7 @@ def physical():
     global entry_appearance
     entry_appearance = Entry(frame2)
     entry_appearance.grid(column=4, row=13)
+    entry_appearance.insert(0, appearance)
 
     # Colour
     leb24 = Label(frame2, text='2')
@@ -303,6 +331,7 @@ def physical():
     global entry_colour
     entry_colour = Entry(frame2)
     entry_colour.grid(column=4, row=14)
+    entry_colour.insert(0, colour)
 
     # Odour
     leb28 = Label(frame2, text='3')
@@ -336,7 +365,8 @@ def physical():
     leb35.grid(column=3, row=16)
 
     global entry_turbidity
-    entry_turbidity = Entry(frame2)
+    entry_turbidity = ttk.Combobox(frame2, values=['Not tested', turbidity])
+    entry_turbidity.current(1)
     entry_turbidity.grid(column=4, row=16)
 
     # Electrical Conductivity (EC)
@@ -353,7 +383,8 @@ def physical():
     leb39.grid(column=3, row=17, sticky=W)
 
     global entry_electricalConductivity
-    entry_electricalConductivity = Entry(frame2)
+    entry_electricalConductivity = ttk.Combobox(frame2, values=['Not tested', electrical_conductivity])
+    entry_electricalConductivity.current(1)
     entry_electricalConductivity.grid(column=4, row=17)
 
     # Total Dissolved Solids (TDS)
@@ -370,7 +401,8 @@ def physical():
     leb43.grid(column=3, row=18)
 
     global entry_total_dissolve
-    entry_total_dissolve = Entry(frame2)
+    entry_total_dissolve = ttk.Combobox(frame2, values=['Not tested', TDS])
+    entry_total_dissolve.current(1)
     entry_total_dissolve.grid(column=4, row=18)
 
     # ** New addition**
@@ -389,7 +421,8 @@ def physical():
     leb47.grid(column=3, row=19)
 
     global entry_total_solids
-    entry_total_solids = Entry(frame2)
+    entry_total_solids = ttk.Combobox(frame2, values=['Not tested', total_solids])
+    entry_total_solids.current(1)
     entry_total_solids.grid(column=4, row=19)
 
     # ** New addition**
@@ -408,30 +441,9 @@ def physical():
     leb51.grid(column=3, row=20)
 
     global entry_total_suspended_solids
-    entry_total_suspended_solids = Entry(frame2)
+    entry_total_suspended_solids = ttk.Combobox(frame2, values=['Not tested', total_suspended_solids])
+    entry_total_suspended_solids.current(1)
     entry_total_suspended_solids.grid(column=4, row=20)
-
-    try:
-        if appearance is not None:
-            entry_appearance.delete(0, END)
-            entry_colour.delete(0, END)
-            entry_odour.delete(0, END)
-            entry_turbidity.delete(0, END)
-            entry_electricalConductivity.delete(0, END)
-            entry_total_dissolve.delete(0, END)
-            entry_total_solids.delete(0, END)
-            entry_total_suspended_solids.delete(0, END)
-
-            entry_appearance.insert(0, appearance)
-            entry_colour.insert(0, colour)
-            entry_odour.insert(0, odour)
-            entry_turbidity.insert(0, turbidity)
-            entry_electricalConductivity.insert(0, electrical_conductivity)
-            entry_total_dissolve.insert(0, TDS)
-            entry_total_solids.insert(0, total_solids)
-            entry_total_suspended_solids.insert(0, total_suspended_solids)
-    except:
-        pass
 
     global next_button1
     next_button1 = ttk.Button(window, text="Next", command=chemical)
@@ -525,7 +537,8 @@ def chemical():
     leb53.grid(column=3, row=21)
 
     global entry_ph
-    entry_ph = Entry(chemical_frame)
+    entry_ph = ttk.Combobox(chemical_frame, values=['Not tested', ph])
+    entry_ph.current(1)
     entry_ph.grid(column=4, row=21)
 
     # PH Alkalinity as Caco3
@@ -542,7 +555,8 @@ def chemical():
     leb57.grid(column=3, row=22)
 
     global entry_phAlkalinity
-    entry_phAlkalinity = Entry(chemical_frame)
+    entry_phAlkalinity = ttk.Combobox(chemical_frame, values=['Not tested', ph_alkalinity])
+    entry_phAlkalinity.current(1)
     entry_phAlkalinity.grid(column=4, row=22)
 
     # Total Alkalinity as CaCO3
@@ -559,7 +573,8 @@ def chemical():
     leb61.grid(column=3, row=23)
 
     global entry_totalAlkalinity
-    entry_totalAlkalinity = Entry(chemical_frame)
+    entry_totalAlkalinity = ttk.Combobox(chemical_frame, values=['Not tested', total_alkalinity])
+    entry_totalAlkalinity.current(1)
     entry_totalAlkalinity.grid(column=4, row=23)
 
     # Total Hardness as CaCO3
@@ -576,7 +591,8 @@ def chemical():
     leb65.grid(column=3, row=24)
 
     global entry_totalHardness
-    entry_totalHardness = Entry(chemical_frame)
+    entry_totalHardness = ttk.Combobox(chemical_frame, values=['Not tested', total_hardness])
+    entry_totalHardness.current(1)
     entry_totalHardness.grid(column=4, row=24)
 
     # Calcium as Ca
@@ -593,7 +609,8 @@ def chemical():
     leb69.grid(column=3, row=25)
 
     global entry_ca
-    entry_ca = Entry(chemical_frame)
+    entry_ca = ttk.Combobox(chemical_frame, values=['Not tested', ca])
+    entry_ca.current(1)
     entry_ca.grid(column=4, row=25)
 
     # Magnesium as Mg
@@ -610,7 +627,8 @@ def chemical():
     leb73.grid(column=3, row=26)
 
     global entry_mg
-    entry_mg = Entry(chemical_frame)
+    entry_mg = ttk.Combobox(chemical_frame, values=['Not tested', mg])
+    entry_mg.current(1)
     entry_mg.grid(column=4, row=26)
 
     # Total iron as Fe
@@ -627,7 +645,8 @@ def chemical():
     leb77.grid(column=3, row=27)
 
     global entry_fe
-    entry_fe = Entry(chemical_frame)
+    entry_fe = ttk.Combobox(chemical_frame, values=['Not tested', fe])
+    entry_fe.current(1)
     entry_fe.grid(column=4, row=27)
 
     # Sodium as Na
@@ -644,7 +663,8 @@ def chemical():
     leb81.grid(column=3, row=28)
 
     global entry_na
-    entry_na = Entry(chemical_frame)
+    entry_na = ttk.Combobox(chemical_frame, values=['Not tested', na])
+    entry_na.current(1)
     entry_na.grid(column=4, row=28)
 
     # Potassium as K
@@ -661,7 +681,8 @@ def chemical():
     leb85.grid(column=3, row=29)
 
     global entry_k
-    entry_k = Entry(chemical_frame)
+    entry_k = ttk.Combobox(chemical_frame, values=['Not tested', k])
+    entry_k.current(1)
     entry_k.grid(column=4, row=29)
 
     # Free Ammonia as NH3
@@ -678,7 +699,8 @@ def chemical():
     leb89.grid(column=3, row=30)
 
     global entry_nh3
-    entry_nh3 = Entry(chemical_frame)
+    entry_nh3 = ttk.Combobox(chemical_frame, values=['Not tested', nh3])
+    entry_nh3.current(1)
     entry_nh3.grid(column=4, row=30)
 
     ## **New addition here**
@@ -697,7 +719,8 @@ def chemical():
     leb93.grid(column=3, row=31)
 
     global entry_no2
-    entry_no2 = Entry(chemical_frame)
+    entry_no2 = ttk.Combobox(chemical_frame, values=['Not tested', no2])
+    entry_no2.current(1)
     entry_no2.grid(column=4, row=31)
 
     # Nitrate as NO3
@@ -714,36 +737,9 @@ def chemical():
     leb97.grid(column=3, row=32)
 
     global entry_no3
-    entry_no3 = Entry(chemical_frame)
+    entry_no3 = ttk.Combobox(chemical_frame, values=['Not tested', no3])
+    entry_no3.current(1)
     entry_no3.grid(column=4, row=32)
-
-    try:
-        if ph is not None:
-            entry_ph.delete(0, END)
-            entry_phAlkalinity.delete(0, END)
-            entry_totalAlkalinity.delete(0, END)
-            entry_totalHardness.delete(0, END)
-            entry_ca.delete(0, END)
-            entry_mg.delete(0, END)
-            entry_fe.delete(0, END)
-            entry_na.delete(0, END)
-            entry_k.delete(0, END)
-            entry_nh3.delete(0, END)
-
-            entry_ph.insert(0, ph)
-            entry_phAlkalinity.insert(0, ph_alkalinity)
-            entry_totalAlkalinity.insert(0, total_alkalinity)
-            entry_totalHardness.insert(0, total_hardness)
-            entry_ca.insert(0, ca)
-            entry_mg.insert(0, mg)
-            entry_fe.insert(0, fe)
-            entry_na.insert(0, na)
-            entry_k.insert(0, k)
-            entry_nh3.insert(0, nh3)
-            entry_no2.insert(0, no2)
-            entry_no3.insert(0, no3)
-    except:
-        pass
 
     global back_to_physical
     back_to_physical = Button(window, text="Back", command=physical)
@@ -827,7 +823,8 @@ def half_chemical():
     leb101.grid(column=3, row=33)
 
     global entry_cl
-    entry_cl = Entry(chemical_half)
+    entry_cl = ttk.Combobox(chemical_half, values=['Not tested', cl])
+    entry_cl.current(1)
     entry_cl.grid(column=4, row=33)
 
     # Fluoride as F
@@ -845,7 +842,8 @@ def half_chemical():
     leb105.grid(column=3, row=34)
 
     global entry_f
-    entry_f = Entry(chemical_half)
+    entry_f = ttk.Combobox(chemical_half, values=['Not tested', f])
+    entry_f.current(1)
     entry_f.grid(column=4, row=34)
 
     # Sulphate as SO4
@@ -863,7 +861,8 @@ def half_chemical():
     leb109.grid(column=3, row=35)
 
     global entry_so4
-    entry_so4 = Entry(chemical_half)
+    entry_so4 = ttk.Combobox(chemical_half, values=['Not tested', so4])
+    entry_so4.current(1)
     entry_so4.grid(column=4, row=35)
 
     # Phosphate as PO4
@@ -881,7 +880,8 @@ def half_chemical():
     leb113.grid(column=3, row=36)
 
     global entry_po4
-    entry_po4 = Entry(chemical_half)
+    entry_po4 = ttk.Combobox(chemical_half, values=['Not tested', po4])
+    entry_po4.current(1)
     entry_po4.grid(column=4, row=36)
 
     # Tids Test 4 hours as O
@@ -899,7 +899,8 @@ def half_chemical():
     leb117.grid(column=3, row=37)
 
     global entry_O
-    entry_O = Entry(chemical_half)
+    entry_O = ttk.Combobox(chemical_half, values=['Not tested', tids_test])
+    entry_O.current(1)
     entry_O.grid(column=4, row=37)
 
     # Dissolved oxygen
@@ -916,7 +917,8 @@ def half_chemical():
     leb120.grid(column=3, row=38)
 
     global entry_do
-    entry_do = Entry(chemical_half)
+    entry_do = ttk.Combobox(chemical_half, values=['Not tested', do])
+    entry_do.current(1)
     entry_do.grid(column=4, row=38)
 
     # Biological Oxygen Demand (BOD)
@@ -934,7 +936,8 @@ def half_chemical():
     leb124.grid(column=3, row=39)
 
     global entry_bod
-    entry_bod = Entry(chemical_half)
+    entry_bod = ttk.Combobox(chemical_half, values=['Not tested', bod])
+    entry_bod.current(1)
     entry_bod.grid(column=4, row=39)
 
     # **New addition
@@ -953,7 +956,8 @@ def half_chemical():
     leb128.grid(column=3, row=40)
 
     global entry_cod
-    entry_cod = Entry(chemical_half)
+    entry_cod = ttk.Combobox(chemical_half, values=['Not tested', cod])
+    entry_cod.current(1)
     entry_cod.grid(column=4, row=40)
 
     leb129 = Label(chemical_half, text='3. Bacteriological Parameters')
@@ -989,30 +993,26 @@ def half_chemical():
     leb138.grid(column=3, row=43)
 
     global entry_fecal_coliform
-    entry_fecal_coliform = Entry(chemical_half)
+    entry_fecal_coliform = ttk.Combobox(chemical_half, values=['Not tested', fecal])
+    entry_fecal_coliform.current(1)
     entry_fecal_coliform.grid(column=4, row=43)
 
     comment = Label(chemical_half, text='3. Comments/ Remarks', width=40)
-    comment.grid(column=0, row=44, pady=10)
+    comment.grid(column=0, row=44, pady=10, sticky=E)
+
     global comment_entry
     comment_entry = Entry(chemical_half, text="comment")
     comment_entry.grid(column=0, row=44, columnspan=5, ipady=30, padx=50)
+    comment_entry.delete(0, END)
+    comment_entry.insert(0, comments)
 
-    try:
-        if cl is not None:
-            entry_cl.insert(0, cl)
-            entry_f.insert(0, f)
-            entry_so4.insert(0, so4)
-            entry_po4.insert(0, po4)
-            entry_O.insert(0, tids_test)
-            entry_bod.insert(0, bod)
-            entry_do.insert(0, do)
-            entry_cod.insert(0, cod)
-            entry_fecal_coliform.insert(0, fecal)
-            comment_entry.delete(0, END)
-            comment_entry.insert(0, comments)
-    except:
-        pass
+    leb139 = Label(chemical_half, text="Date:")
+    leb139.grid(column=0, row=45, sticky=E, pady=10)
+
+    global button_date
+    button_date = ttk.Button(chemical_half, text="Select a date", command=lambda:datePicker('main_date'))
+    button_date.grid(column=1, row=45, sticky=W, pady=10)
+    button_date['text'] = date
 
     global back_to_chemical
     back_to_chemical = Button(window, text="Back", command=chemical)
@@ -1028,8 +1028,7 @@ def confirm():
         '''UPDATE main_data SET cl=?, f=?, so4=?, po4=?, tids_test=?, do=?, bod=?, chemical_oxygen_demand=?, fecal_coliform=?, comments=?, date=?  WHERE id = ?''',
         (entry_cl.get(), entry_f.get(), entry_so4.get(), entry_po4.get(),
          entry_O.get(), entry_do.get(), entry_bod.get(), entry_cod.get(), entry_fecal_coliform.get(),
-         comment_entry.get(), date, id))
-
+         comment_entry.get(), button_date['text'], id))
     cur.execute('''SELECT max(id) FROM main_data''')
     max_id = cur.fetchall()[0][0]
     cur.execute('''SELECT * FROM main_data WHERE id = ?''', (max_id,))
@@ -1100,7 +1099,7 @@ def saveWord():
     doc.tables[0].cell(2, 3).text = all[5]
     doc.tables[0].cell(3, 1).text = all[6]
     doc.tables[0].cell(3, 3).text = all[7]
-    doc.tables[0].cell(4, 1).text = all[8]
+    doc.tables[0].cell(4, 1).text = str(sampleReference)
 
     x, y = 1, 12
     for cell in range(8):
@@ -1121,7 +1120,7 @@ def saveWord():
 
     for paragraph in doc.paragraphs:
         if 'Date' in paragraph.text:
-            paragraph.text = "Date: " + formatted_date
+            paragraph.text = "Date: " + button_date['text']
     doc.save("word/%s" % filename)
 
 
@@ -1133,37 +1132,89 @@ def generate():
     to_sample = to_entry.get()
     cur.execute('''SELECT count(sample_number) FROM main_data WHERE sample_number BETWEEN ? and ? ''',
                 (from_sample, to_sample,))
-    all = cur.fetchall()
-    total_samples = all[0][0]
+    x = cur.fetchall()
+    total_samples = x[0][0]
     cur.execute('''SELECT customer, sample_drawn_by FROM main_data WHERE sample_number = ?  ''', (to_sample,))
     raw_data = cur.fetchall()
     customer_name = raw_data[0][0]
     sample_drawn_by = raw_data[0][1]
 
-    if price_per_sample.get() == 'Other':
-        total_amount = total_samples * other_entry.get()
+    cur.execute("SELECT * FROM main_data WHERE sample_number = ?",(to_sample,))
+    all = cur.fetchall()
+    print(all)
+    print(len(all))
+
+    physical_parameter = [all[0][12], all[0][13], all[0][14], all[0][15], all[0][16], all[0][17], all[0][18],
+                          all[0][19]]
+    physical_tested_parameter_count = 8
+    for parameters in physical_parameter:
+        if parameters == "Not tested":
+            physical_tested_parameter_count -= 1
+
+    print(physical_tested_parameter_count)
+
+    chemical_tested_parameter_count = 20
+    chemical_parameter = [all[0][20], all[0][21], all[0][22], all[0][23], all[0][24], all[0][25], all[0][26],
+                          all[0][27], all[0][28], all[0][29], all[0][30], all[0][31],
+                          all[0][32], all[0][33], all[0][34], all[0][35], all[0][36], all[0][37], all[0][38],
+                          all[0][39]]
+    for parameters in chemical_parameter:
+        if parameters == "Not tested":
+            chemical_tested_parameter_count -= 1
+
+    if all[0][40] == "Not tested":
+        biological_tested_parameter_count = 0
     else:
-        total_amount = total_samples * int(price_per_sample.get())
+        biological_tested_parameter_count = 1
 
     if deduction.get() == '' or None:
         deductionRs = 0
     else:
         deductionRs = int(deduction.get())
 
-    grand_total = int(total_amount) - deductionRs * int(total_samples) + int(TA_sample_collection.get())
+    if price_per_sample.get() == 'Other':
+        total_amount = (int(total_samples) * int(other_entry.get())) - (int(total_samples) * int(deductionRs))
+    else:
+        total_amount = (int(total_samples) * int(price_per_sample.get())) - (int(total_samples) * int(deductionRs))
+
+    if TA_sample_collection.get() == '' or TA_sample_collection.get() is None:
+        sample_collection = 0
+    else:
+        sample_collection = int(TA_sample_collection.get())
+    grand_total = total_amount + sample_collection
     try:
         doc = Document('water lab bill.docx')
         doc.tables[0].cell(0, 1).text = customer_name
-        doc.tables[0].cell(1, 1).text = from_sample + ' ' + 'to' + ' ' + to_sample
+        if from_sample == to_sample:
+            doc.tables[0].cell(1, 1).text = from_sample
+        else:
+            doc.tables[0].cell(1, 1).text = from_sample + ' ' + 'to' + ' ' + to_sample
         doc.tables[0].cell(2, 1).text = sample_drawn_by
         doc.tables[0].cell(3, 1).text = str(datetime.date.today())
-        doc.tables[0].cell(5, 1).text = billing_rate_category.get()
-        doc.tables[0].cell(6, 1).text = price_per_sample.get()
+
+        if billing_rate_category.get() == 'Other':
+            doc.tables[0].cell(5, 1).text = other_billing_rate_category.get()
+        else:
+            doc.tables[0].cell(5, 1).text = billing_rate_category.get()
+
+        doc.tables[0].cell(4, 2).text = str(physical_tested_parameter_count)
+        doc.tables[0].cell(4, 4).text = str(chemical_tested_parameter_count)
+        doc.tables[0].cell(4, 6).text = str(biological_tested_parameter_count)
+
+        if billing_rate_category.get() == 'Other':
+            doc.tables[0].cell(6, 1).text = str(other_entry.get())
+        else:
+            doc.tables[0].cell(6, 1).text = str(price_per_sample.get())
+
         doc.tables[0].cell(7, 1).text = str(deductionRs)
         doc.tables[0].cell(8, 1).text = str(total_samples)
         doc.tables[0].cell(9, 1).text = "Rs.%d" % int(total_amount)
-        doc.tables[0].cell(10, 1).text = TA_sample_collection.get()
+        if sample_collection == 0:
+            doc.tables[0].cell(10, 1).text = '0'
+        else:
+            doc.tables[0].cell(10, 1).text = ("Rs." + str(TA_sample_collection.get()))
         doc.tables[0].cell(11, 1).text = "Rs.%d" % grand_total
+        doc.paragraphs[27].text = "Date:" +' '+ billing_date
         doc.save(f"word/bill/{from_sample} to {to_sample} bill.docx")
         messagebox.showinfo("Success", "Bill has been generated successfully")
     except:
@@ -1177,9 +1228,11 @@ def bill():
     billing_frame.grid(padx=10, pady=10)
     title = Label(billing_frame, text="Billing Window")
     title.grid(row=0, column=0, columnspan=4)
+    title.configure(font="Verdana 20")
 
-    select_samples = Label(billing_frame, text="Select the sample numbers of which you want to generate Bill.")
-    select_samples.grid(row=1, column=0, columnspan=4)
+    select_samples = Label(billing_frame, text="Select the sample numbers of which you want to generate Bill.",
+                           fg="red")
+    select_samples.grid(row=1, column=0, columnspan=4, ipady=10, ipadx=10)
 
     from_label = Label(billing_frame, text="From")
     from_label.grid(row=2, column=0, sticky=E)
@@ -1212,58 +1265,78 @@ def bill():
     billing_rate_category.grid(row=3, column=1, columnspan=4, pady=5)
     billing_rate_category.current(3)
 
+    other_price = Label(billing_frame, text="If other:")
+    other_price.grid(row=4, column=0, sticky=E)
+
+    global other_billing_rate_category
+
+    other_billing_rate_category = Entry(billing_frame)
+    other_billing_rate_category.grid(row=4, column=1, sticky=W)
+
     price_label = Label(billing_frame, text='Price per sample:')
-    price_label.grid(row=4, column=0, sticky=E)
+    price_label.grid(row=5, column=0, sticky=E)
 
     global price_per_sample
     price_per_sample = ttk.Combobox(billing_frame, value=['1500', '1000', '800', '600', 'Other'])
-    price_per_sample.grid(row=4, column=1, sticky=W, pady=5)
+    price_per_sample.grid(row=5, column=1, sticky=W, pady=5)
     price_per_sample.current(3)
 
     other_label = Label(billing_frame, text='If Other')
-    other_label.grid(row=4, column=2, sticky=E)
+    other_label.grid(row=5, column=2, sticky=E)
 
     global other_entry
     other_entry = Entry(billing_frame)
-    other_entry.grid(row=4, column=3, sticky=W)
+    other_entry.grid(row=5, column=3, sticky=W)
 
     deduction_label = Label(billing_frame, text='Deduction per sample:')
-    deduction_label.grid(row=5, column=0, sticky=E)
+    deduction_label.grid(row=6, column=0, sticky=E)
 
     global deduction
     deduction = Entry(billing_frame)
-    deduction.grid(row=5, column=1, sticky=W)
+    deduction.grid(row=6, column=1, sticky=W)
 
     TA_sample_collection_label = Label(billing_frame, text="Travel Allowance and sample collection")
-    TA_sample_collection_label.grid(row=6, column=0, sticky=W)
+    TA_sample_collection_label.grid(row=7, column=0, sticky=E)
 
     # noinspection PyGlobalUndefined
     global TA_sample_collection
     TA_sample_collection = Entry(billing_frame)
-    TA_sample_collection.grid(row=6, column=1, sticky=E)
+    TA_sample_collection.grid(row=7, column=1, sticky=W)
+
+    global bill_date
+    bill_date = ttk.Button(billing_frame, text='-- Select a date --', command=lambda: datePicker('bill_date'))
+    bill_date.grid(row=8, column=1, sticky=W)
 
     generator_button = ttk.Button(billing_frame, text="Generate Bill", command=generate)
-    generator_button.grid(row=6, column=3)
+    generator_button.grid(row=8, column=3)
 
 
 def datePicker(button_name):
     def printDate():
         selectedDate = cal.selection_get()
+        print(selectedDate.strftime('%d %B %Y'))
         if button_name == 'drawnDate':
-            entry_sampleDrawnDate.configure(text=selectedDate)
+            entry_sampleDrawnDate.configure(text=selectedDate.strftime('%d %B %Y'))
         elif button_name == 'reachedDate':
-            entry_sampleReached.configure(text=selectedDate)
+            entry_sampleReached.configure(text=selectedDate.strftime('%d %B %Y'))
         elif button_name == 'testStart':
-            entry_testStart.configure(text=selectedDate)
+            entry_testStart.configure(text=selectedDate.strftime('%d %B %Y'))
         elif button_name == 'testEnd':
-            entry_testEnd.configure(text=selectedDate)
+            entry_testEnd.configure(text=selectedDate.strftime('%d %B %Y'))
+        elif button_name == 'main_date':
+            button_date.configure(text=selectedDate.strftime('%d %B %Y'))
+        elif button_name == 'bill_date':
+            global billing_date
+            billing_date = selectedDate.strftime('%d %B %Y')
+            bill_date.configure(text=selectedDate.strftime('%d %B %Y'))
+
         dateWindow.destroy()
 
     dateWindow = Toplevel(window)
     year, month, day = date.year, date.month, date.day
     cal = Calendar(dateWindow, font="Arial 14", selectmode='day', year=year, month=month, day=day)
     cal.pack(fill="both", expand=True)
-    ttk.Button(dateWindow, text="Select", command=printDate).pack(pady = 5)
+    ttk.Button(dateWindow, text="Select", command=printDate).pack(pady=5)
 
 
 s = ttk.Style(window)
