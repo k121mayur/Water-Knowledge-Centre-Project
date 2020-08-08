@@ -24,8 +24,14 @@ window.iconbitmap('')
 connection = sqlite3.connect('WKC.db')
 cur = connection.cursor()
 
-cur.execute(
-    '''CREATE TABLE IF NOT EXISTS main_data ("Id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "customer" TEXT NOT NULL, "sample_number" INTEGER NOT NULL UNIQUE, "sample_drawn_by" TEXT, "sample_drawn_date" TEXT, "sample_reached_lab" TEXT, "test_start_date" TEXT, "test_end_date" TEXT, "sample_reference" TEXT, "village" TEXT, "source_type" TEXT, "location_of_source" TEXT, "appearance" TEXT, "colour" TEXT, "odour" TEXT, "turbidity" INTEGER, "electrical_conductivity" INTEGER, "total_dissolved_solids" INTEGER, "total_solids" INTEGER, "total_suspended_solids" INTEGER, "ph" INTEGER, "ph_alkalinity" INTEGER, "total_alkalinity" INTEGER, "total_hardness" INTEGER, "ca" INTEGER, "mg" INTEGER, "fe" INTEGER, "na" INTEGER, "k" INTEGER, "nh3" INTEGER, "no2" INTEGER, "no3"	INTEGER, "cl" INTEGER, "f" INTEGER, "so4" INTEGER, "po4" INTEGER, "tids_test" INTEGER, "do"	INTEGER, "bod" INTEGER, "chemical_oxygen_demand" INTEGER, "fecal_coliform" INTEGER, "comments" TEXT, "date" TEXT)''')
+cur.execute('''CREATE TABLE IF NOT EXISTS main_data ("Id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 
+"customer" TEXT NOT NULL, "sample_number" INTEGER NOT NULL UNIQUE, "sample_drawn_by" TEXT, "sample_drawn_date" TEXT, 
+"sample_reached_lab" TEXT, "test_start_date" TEXT, "test_end_date" TEXT, "sample_reference" TEXT, "village" TEXT, 
+"source_type" TEXT, "location_of_source" TEXT, "appearance" TEXT, "colour" TEXT, "odour" TEXT, "turbidity" TEXT, 
+"electrical_conductivity" TEXT, "total_dissolved_solids" TEXT, "total_solids" TEXT, "total_suspended_solids" TEXT, 
+"ph" TEXT, "ph_alkalinity" TEXT, "total_alkalinity" TEXT, "total_hardness" TEXT, "ca" TEXT, "mg" TEXT, "fe" TEXT, 
+"na" TEXT, "k" TEXT, "nh3" TEXT, "no2" TEXT, "no3" TEXT, "cl" TEXT, "f" TEXT, "so4" TEXT, "po4" TEXT, "tids_test" TEXT, 
+"do" TEXT, "bod" TEXT, "chemical_oxygen_demand" TEXT, "fecal_coliform" TEXT, "comments" TEXT, "date" TEXT)''')
 
 
 # First / Start screen
@@ -235,7 +241,7 @@ def physical():
         max_id = None
 
     global sampleReference
-    sampleReference = entry_sampleReference.get() + ' ' + entry_village.get().strip() + ' ' + entry_location.get().strip() + ' ' + entry_sourceType.get()
+    sampleReference = entry_sampleReference.get() + ', ' + entry_village.get().strip() + ', ' + entry_location.get().strip() + ', ' + entry_sourceType.get()
 
     try:
         cur.execute(
@@ -249,7 +255,8 @@ def physical():
         cur.execute(
             '''UPDATE main_data SET customer=?, sample_number=?, sample_drawn_by=?, sample_drawn_date=?, sample_reached_lab=?, test_start_date=?, test_end_date=?, sample_reference=? WHERE id = ?''',
             (entry_customer.get(), entry_sampleNumber.get(), entry_sampleDrawn.get(), entry_sampleDrawnDate['text'],
-             entry_sampleReached['text'], entry_testStart['text'], entry_testEnd['text'], entry_sampleReference.get(), id_no))
+             entry_sampleReached['text'], entry_testStart['text'], entry_testEnd['text'], entry_sampleReference.get(),
+             id_no))
 
     connection.commit()
 
@@ -1010,7 +1017,7 @@ def half_chemical():
     leb139.grid(column=0, row=45, sticky=E, pady=10)
 
     global button_date
-    button_date = ttk.Button(chemical_half, text="Select a date", command=lambda:datePicker('main_date'))
+    button_date = ttk.Button(chemical_half, text="Select a date", command=lambda: datePicker('main_date'))
     button_date.grid(column=1, row=45, sticky=W, pady=10)
     button_date['text'] = date
 
@@ -1093,34 +1100,194 @@ def saveWord():
     all = cur.fetchall()[0]
     doc = Document('sample.docx')
     doc.tables[0].cell(0, 1).text = all[1]
+    doc.tables[0].rows[0].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
     doc.tables[0].cell(1, 1).text = str(all[2])
+    doc.tables[0].rows[1].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
     doc.tables[0].cell(1, 3).text = all[3]
+    doc.tables[0].rows[1].cells[3].paragraphs[0].runs[0].font.name = 'Footlight MT'
     doc.tables[0].cell(2, 1).text = all[4]
+    doc.tables[0].rows[2].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
     doc.tables[0].cell(2, 3).text = all[5]
+    doc.tables[0].rows[2].cells[3].paragraphs[0].runs[0].font.name = 'Footlight MT'
     doc.tables[0].cell(3, 1).text = all[6]
+    doc.tables[0].rows[3].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
     doc.tables[0].cell(3, 3).text = all[7]
+    doc.tables[0].rows[3].cells[3].paragraphs[0].runs[0].font.name = 'Footlight MT'
     doc.tables[0].cell(4, 1).text = str(sampleReference)
+    doc.tables[0].rows[4].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
+
+    global exceed
+    exceed =''
 
     x, y = 1, 12
     for cell in range(8):
         doc.tables[1].cell(x, 4).text = str(all[y])
+        doc.tables[1].rows[x].cells[4].paragraphs[0].runs[0].font.name = 'Footlight MT'
         x += 1
         y += 1
+    # Table 1 Limit border bold
+    try:
+        if doc.tables[1].cell(3, 4).text == 'Objectionable':
+            exceed = doc.tables[1].cell(3, 1).text
+            doc.tables[1].rows[3].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+
+    try:
+        if float(doc.tables[1].cell(4, 4).text) > 5:
+            exceed = exceed + ', ' + doc.tables[1].cell(4, 1).text
+            doc.tables[1].rows[4].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+
+    try:
+        if float(doc.tables[1].cell(6, 4).text) > 2000:
+            exceed = exceed + ', ' + doc.tables[1].cell(6, 1).text
+            doc.tables[1].rows[6].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
 
     x, y = 1, 20
     for cell in range(20):
         doc.tables[2].cell(x, 4).text = str(all[y])
+        doc.tables[2].rows[x].cells[4].paragraphs[0].runs[0].font.name = 'Footlight MT'
         x += 1
         y += 1
 
+    # Table 2 limit bold
+    # ph
+    try:
+        if 6.5 > float(doc.tables[2].cell(1, 4).text) or float(doc.tables[2].cell(4, 4).text) > 8.5:
+            exceed = exceed + ', ' + doc.tables[2].cell(1, 1).text
+            doc.tables[2].rows[1].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+
+    # Total Alkalinity
+    try:
+        if float(doc.tables[2].cell(3, 4).text) > 600:
+            exceed = exceed + ', ' + doc.tables[2].cell(3, 1).text
+             
+            doc.tables[2].rows[3].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+
+    # Total Hardness
+    try:
+        if float(doc.tables[2].cell(4, 4).text) > 600:
+            exceed = exceed + ', ' + doc.tables[2].cell(4, 1).text
+             
+            doc.tables[2].rows[4].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+    # Ca
+    try:
+        if float(doc.tables[2].cell(5, 4).text) > 100:
+            exceed = exceed + ', ' + doc.tables[2].cell(5, 1).text
+             
+            doc.tables[2].rows[5].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+
+    # Mg
+    try:
+        if float(doc.tables[2].cell(6, 4).text) > 150:
+            exceed = exceed + ', ' + doc.tables[2].cell(6, 1).text
+             
+            doc.tables[2].rows[6].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+
+    # Fe
+    try:
+        if float(doc.tables[2].cell(7, 4).text) > 1.0:
+            exceed = exceed + ', ' + doc.tables[2].cell(7, 1).text
+            doc.tables[2].rows[7].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+    # NH3
+    try:
+        if float(doc.tables[2].cell(10, 4).text) > 0.5:
+            exceed = exceed + ', ' + doc.tables[2].cell(10, 1).text
+             
+            doc.tables[2].rows[10].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+    # NO2
+    try:
+        if float(doc.tables[2].cell(11, 4).text) > 0.5:
+            exceed = exceed + ', ' + doc.tables[2].cell(11, 1).text
+             
+            doc.tables[2].rows[11].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+    # NO3
+    try:
+        if float(doc.tables[2].cell(12, 4).text) > 45:
+            exceed = exceed + ', ' + doc.tables[2].cell(12, 1).text
+             
+            doc.tables[2].rows[12].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+    # Cl
+    try:
+        if float(doc.tables[2].cell(13, 4).text) > 1000:
+            exceed = exceed + ', ' + doc.tables[2].cell(13, 1).text
+             
+            doc.tables[2].rows[13].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+    # Fluoride as F
+    try:
+        if float(doc.tables[2].cell(14, 4).text) > 1.5:
+            exceed = exceed + ', ' + doc.tables[2].cell(14, 1).text
+             
+            doc.tables[2].rows[14].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+    # Sulphate as SO4
+    try:
+        if float(doc.tables[2].cell(15, 4).text) > 400:
+            exceed = exceed + ', ' + doc.tables[2].cell(15, 1).text
+             
+            doc.tables[2].rows[15].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+
+    # Phosphate as PO4
+    try:
+        if float(doc.tables[2].cell(16, 4).text) > 0.5:
+            exceed = exceed + ', ' + doc.tables[2].cell(16, 1).text
+             
+            doc.tables[2].rows[16].cells[4].paragraphs[0].runs[0].font.bold = True
+    except:
+        pass
+
     doc.tables[3].cell(1, 4).text = str(all[40])
-    doc.tables[4].cell(0, 0).text = str(all[41])
+    doc.tables[3].rows[1].cells[4].paragraphs[0].runs[0].font.name = 'Footlight MT'
+
+    # if doc.tables[3].cell(1, 4).text == 'Not tested':
+    #   doc.tables[3].rows[1].cells[4].paragraphs[0].runs[0].font.bold = True
+    if exceed:
+        doc.tables[4].cell(0, 0).text = exceed + '' + " are exiding limit " + str(all[41])
+    else:
+        doc.tables[4].cell(0, 0).text = str(all[41])
+
+    doc.tables[4].rows[0].cells[0].paragraphs[0].runs[0].font.name = 'Footlight MT'
 
     filename = str(all[1]).strip() + '_sample_no_' + str(all[2]).strip() + '.docx'
 
     for paragraph in doc.paragraphs:
         if 'Date' in paragraph.text:
-            paragraph.text = "Date: " + button_date['text']
+            paragraph.text  =''
+            run = paragraph.add_run()
+            run.text = "Date: "
+            run.bold = True
+            run.font.name = 'Footlight MT'
+            run1 = paragraph.add_run()
+            run1.text = button_date['text']
+            run1.font.name = 'Footlight MT'
+
     doc.save("word/%s" % filename)
 
 
@@ -1139,10 +1306,8 @@ def generate():
     customer_name = raw_data[0][0]
     sample_drawn_by = raw_data[0][1]
 
-    cur.execute("SELECT * FROM main_data WHERE sample_number = ?",(to_sample,))
+    cur.execute("SELECT * FROM main_data WHERE sample_number = ?", (to_sample,))
     all = cur.fetchall()
-    print(all)
-    print(len(all))
 
     physical_parameter = [all[0][12], all[0][13], all[0][14], all[0][15], all[0][16], all[0][17], all[0][18],
                           all[0][19]]
@@ -1150,8 +1315,6 @@ def generate():
     for parameters in physical_parameter:
         if parameters == "Not tested":
             physical_tested_parameter_count -= 1
-
-    print(physical_tested_parameter_count)
 
     chemical_tested_parameter_count = 20
     chemical_parameter = [all[0][20], all[0][21], all[0][22], all[0][23], all[0][24], all[0][25], all[0][26],
@@ -1185,36 +1348,58 @@ def generate():
     try:
         doc = Document('water lab bill.docx')
         doc.tables[0].cell(0, 1).text = customer_name
+        doc.tables[0].rows[0].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
         if from_sample == to_sample:
             doc.tables[0].cell(1, 1).text = from_sample
         else:
             doc.tables[0].cell(1, 1).text = from_sample + ' ' + 'to' + ' ' + to_sample
-        doc.tables[0].cell(2, 1).text = sample_drawn_by
-        doc.tables[0].cell(3, 1).text = str(datetime.date.today())
 
+        doc.tables[0].rows[1].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
+
+        doc.tables[0].cell(2, 1).text = sample_drawn_by
+        doc.tables[0].rows[2].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
+        doc.tables[0].cell(3, 1).text = billing_date
+        doc.tables[0].rows[3].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
         if billing_rate_category.get() == 'Other':
             doc.tables[0].cell(5, 1).text = other_billing_rate_category.get()
         else:
             doc.tables[0].cell(5, 1).text = billing_rate_category.get()
+        doc.tables[0].rows[5].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
 
         doc.tables[0].cell(4, 2).text = str(physical_tested_parameter_count)
+        doc.tables[0].rows[4].cells[2].paragraphs[0].runs[0].font.name = 'Footlight MT'
         doc.tables[0].cell(4, 4).text = str(chemical_tested_parameter_count)
+        doc.tables[0].rows[4].cells[4].paragraphs[0].runs[0].font.name = 'Footlight MT'
         doc.tables[0].cell(4, 6).text = str(biological_tested_parameter_count)
+        doc.tables[0].rows[4].cells[6].paragraphs[0].runs[0].font.name = 'Footlight MT'
 
         if billing_rate_category.get() == 'Other':
             doc.tables[0].cell(6, 1).text = str(other_entry.get())
         else:
             doc.tables[0].cell(6, 1).text = str(price_per_sample.get())
-
+        doc.tables[0].rows[6].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
         doc.tables[0].cell(7, 1).text = str(deductionRs)
+        doc.tables[0].rows[7].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
         doc.tables[0].cell(8, 1).text = str(total_samples)
+        doc.tables[0].rows[8].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
         doc.tables[0].cell(9, 1).text = "Rs.%d" % int(total_amount)
+        doc.tables[0].rows[9].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
         if sample_collection == 0:
             doc.tables[0].cell(10, 1).text = '0'
         else:
             doc.tables[0].cell(10, 1).text = ("Rs." + str(TA_sample_collection.get()))
+        doc.tables[0].rows[10].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
         doc.tables[0].cell(11, 1).text = "Rs.%d" % grand_total
-        doc.paragraphs[27].text = "Date:" +' '+ billing_date
+        doc.tables[0].rows[11].cells[1].paragraphs[0].runs[0].font.name = 'Footlight MT'
+        run = doc.paragraphs[27].add_run()
+        run.text = 'Date: '
+        run.bold = True
+        run.font.name = 'Footlight MT'
+        run1 = doc.paragraphs[27].add_run()
+        run1.text = billing_date
+        run1.font.name = 'Footlight MT'
+        #doc.paragraphs[27].add_run = "Date:" + ' ' + billing_date
+
         doc.save(f"word/bill/{from_sample} to {to_sample} bill.docx")
         messagebox.showinfo("Success", "Bill has been generated successfully")
     except:
@@ -1314,7 +1499,6 @@ def bill():
 def datePicker(button_name):
     def printDate():
         selectedDate = cal.selection_get()
-        print(selectedDate.strftime('%d %B %Y'))
         if button_name == 'drawnDate':
             entry_sampleDrawnDate.configure(text=selectedDate.strftime('%d %B %Y'))
         elif button_name == 'reachedDate':
